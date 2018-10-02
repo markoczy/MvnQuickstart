@@ -1,0 +1,152 @@
+<!-- ===========================================================================
+\\\\\\\\\\\\\\\      Maven minimal Builder for runnable jars     ///////////////
+============================================================================ -->
+
+<!-- XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX
+
+Created by      : Aleistar Markoczy (GitHub.com/markoczy)
+License         : Public Domain (a.k.a Use it for whatever you want)
+Version Control :
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| Version | Author              | Comment                                      |
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| 1.0     | markoczy            | Ext. Libs + resources build                  |
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!-- =========================================================================
+  Define section 
+  ========================================================================== -->
+  <!-- Package root -->
+  <groupId>mkz.example</groupId>
+  <!-- Application verbose name -->
+  <name>My useful Application</name>
+  <!-- Output Jar Name -->
+  <artifactId>myjar</artifactId>
+  <!-- Designated Version -->
+  <version>0.1</version>
+  <properties>
+    <!-- Main Class -->
+    <app.main.class>mkz.example.App</app.main.class>
+    <!-- Java Version -->
+    <source.javaversion>1.8</source.javaversion>
+    <target.javaversion>1.8</target.javaversion>
+    <!-- Source files Encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Resource dir in -->
+    <source.res>res</source.res>
+    <!-- Resource dir out -->
+    <target.res>res</target.res>
+    <!-- Lib dir -->
+    <target.lib>lib</target.lib>
+    <!-- Optional: Set relative target dir (./target/${target.main}/...) -->
+    <target.main></target.main>
+  </properties>
+  <!-- ===================================================================== -->
+
+
+  <!-- =========================================================================
+  Dependencies section 
+  ========================================================================== -->
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <!-- ===================================================================== -->
+
+
+  <!-- =========================================================================
+  Builder
+  ========================================================================== -->
+  <packaging>jar</packaging>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.1</version>
+          <configuration>
+            <source>${source.javaversion}</source>
+            <target>${target.javaversion}</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <!-- Compile -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>${target.lib}/</classpathPrefix>
+              <mainClass>${app.main.class}</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Class-Path>.</Class-Path>
+            </manifestEntries>
+          </archive>
+          <finalName>${target.main}/${project.artifactId}-${project.version}</finalName>
+        </configuration>
+      </plugin>
+      <!-- Copy Dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${target.main}/${target.lib}</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Copy Resources -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/${target.main}/${target.res}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${source.res}</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <modelVersion>4.0.0</modelVersion>
+  <!-- ===================================================================== -->
+  
+</project>
